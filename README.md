@@ -42,6 +42,8 @@ We are developing a system capable of tracking every appliance in the home. The 
 
 # System High-Level Block Diagram
 
-![Energy Monitoring System](Images/Monitoring System block diagram.JPG)
+<img src="Images/Monitoring System block diagram.JPG">
+
+
 
 
