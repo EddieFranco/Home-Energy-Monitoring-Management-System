@@ -8,7 +8,7 @@ We are developing a system capable of tracking every appliance in the home. The 
 
 ### Items and Tasks
 1. **Item 1: [Base Circuit]**
-   - [ ] Task 1: [Requirements & Preliminary Design, Generate High-Level Block Diagram]
+   - [x] Task 1: [Requirements & Preliminary Design, Generate High-Level Block Diagram]
    - [ ] Task 2: [Create a simple circuit to simulate a system that reads and shows voltage changes]
    - [ ] Task 3: [Choose an ADC , Microcontroller, and other components for the base circuit model ]
 
