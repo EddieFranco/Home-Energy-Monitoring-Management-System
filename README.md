@@ -63,6 +63,65 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 | Display | 16×2 LCD via I²C (optional) |
 | Load | 12V resistive water heater element (~300W) |
 
+%%{init: {
+  "theme": "dark",
+  "flowchart": { "curve": "linear", "htmlLabels": true, "nodeSpacing": 40, "rankSpacing": 40 }
+}}%%
+flowchart LR
+
+  %% ===== Controller =====
+  subgraph CTRL["Controller (STM32F407G-DISC1)"]
+    MCU[STM32F407 MCU]
+  end
+
+  %% ===== Power Path =====
+  subgraph POWER["Power Path"]
+    V12[12 V DC Supply]
+    LM[LM2596 Buck (5 V / 3.3 V)]
+    HEATER[Water Heater (Resistive Load)]
+    V12 --> LM
+    V12 --> HEATER
+  end
+
+  %% ===== Actuation =====
+  subgraph ACT["Actuation"]
+    BTS[BTS7960 Driver]
+  end
+  MCU -->|PWM TIM3<br/>CH3: PB0 (LPWM)<br/>CH4: PB1 (RPWM)| BTS
+  BTS -->|High-current path| HEATER
+
+  %% ===== Sensing & Metering =====
+  subgraph SENSE["Sensing & Metering"]
+    ATM[ATM90E32AS Energy Meter]
+    DS[DS18B20 Temp Sensor]
+  end
+  MCU <-->|SPI3<br/>PC10:SCK • PC11:MISO • PC12:MOSI • PC9:CS| ATM
+  DS -->|1-Wire GPIO<br/>(+4.7 kΩ pull-up)| MCU
+  ATM -. measures .-> HEATER
+
+  %% ===== User I/O & Telemetry =====
+  subgraph IO["User I/O & Telemetry"]
+    LCD[LCD 16×2 (I²C via PCF8574)]
+    PC[PC / Python Matplotlib]
+  end
+  MCU <-->|I²C1<br/>PB6:SCL • PB7:SDA| LCD
+  MCU -->|UART2 115200 8N1<br/>PA2:TX • PA3:RX| PC
+
+  %% ===== Rails & Grounds =====
+  LM -->|5 V / 3.3 V rails| MCU
+  LM -->|5 V| LCD
+  classDef box fill:#1e88e5,stroke:#0d47a1,color:#fff,stroke-width:2px;
+  classDef sense fill:#26a69a,stroke:#00695c,color:#fff,stroke-width:2px;
+  classDef power fill:#8e24aa,stroke:#4a148c,color:#fff,stroke-width:2px;
+  classDef io fill:#ef6c00,stroke:#e65100,color:#fff,stroke-width:2px;
+
+  class CTRL,MCU box;
+  class SENSE,ATM,DS sense;
+  class POWER,V12,LM,HEATER power;
+  class IO,LCD,PC io;
+  class ACT,BTS box;
+
+
 **Connections**
 - **PWM (Heater Control / BTS7960 Driver):**  
   - TIM3_CH3 → PB0 (LPWM)  
