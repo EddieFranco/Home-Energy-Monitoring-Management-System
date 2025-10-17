@@ -63,6 +63,7 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 | Display | 16×2 LCD via I²C (optional) |
 | Load | 12V resistive water heater element (~300W) |
 
+---
 **Connections**
 - **PWM (Heater Control / BTS7960 Driver):**  
   - TIM3_CH3 → PB0 (LPWM)  
