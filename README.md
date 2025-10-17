@@ -1,9 +1,9 @@
-# 🔥 Water Heater Temperature Control System  
+#  Water Heater Temperature Control System  
 ### Using STM32F407, FreeRTOS, PID Control, and ATM90E32AS Energy Meter
 
 ---
 
-## 🧠 Overview
+## Overview
 
 This project implements a **closed-loop water heater temperature control system** using a **PID controller** under **FreeRTOS** on an **STM32F407G-DISC1** microcontroller.
 
@@ -17,7 +17,7 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 
 ---
 
-## 🖼️ System Images
+## System Images
 
 | Description | Image |
 |--------------|--------|
@@ -26,7 +26,7 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 | Live data visualization | ![Python Plot](images/python_plot.png) |
 | Optional system block diagram | ![Block Diagram](images/system_diagram.png) |
 
-> 💡 *Replace these image paths with your actual image filenames once uploaded.*
+> 💡*Replace these image paths with your actual image filenames once uploaded.*
 
 ---
 
@@ -42,5 +42,5 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 
 ---
 
-## 🧩 System Architecture
+## System Architecture
 
