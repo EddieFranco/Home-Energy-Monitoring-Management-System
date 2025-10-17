@@ -28,7 +28,7 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 | PCB Atmel M90E32AS Power Monitor Schematic Overview | ![Schematic Overview](Images/M90E32AS_schematic.JPG) |
 | PCB Atmel M90E32AS Power Monitor Layout | ![PCB Layout](Images/M90E32AS_layout.JPG) |
 | PCB Atmel M90E32AS Power Monitor 3D | ![PCB 3D](Images/M90E32AS_3D.JPG) |
-| Water Heater Temperature Control Hardware Prototype Setup | ![System Setup](Images/system_setup.jpg) |
+| Water Heater Temperature Control Hardware Prototype Setup | ![System Setup](Images/Hardware_Setup.jpg) |
 | Water Heater Temperature Control Live Data Visualization | ![Python Plot](Images/python_plot.png) |
 | Water Heater Temperature Control Optional System Block Diagram | ![Block Diagram](Images/system_diagram.png) |
 
