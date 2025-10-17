@@ -96,81 +96,70 @@ The diagram below shows the communication between tasks, queues, semaphores, and
   "theme": "dark",
   "flowchart": { "htmlLabels": true, "curve": "linear", "nodeSpacing": 40, "rankSpacing": 40 }
 }}%%
+
 flowchart TB
-
-  %% ---------- Legend ----------
-  subgraph Legend["Legend"]
+ subgraph Legend["Legend"]
     direction LR
-    L1["Semaphores"]
-    L2["Mutex"]
-    L3["Task"]
-    L4["Queue"]
+        L1["Semaphores"]
+        L2["Mutex"]
+        L3["Task"]
+        L4["Queue"]
   end
-
-  %% ---------- LCD Preview ----------
-  subgraph LCD["LCD 16×2 (LCD Task)"]
-    direction TB
-    L5["Line 1:  P:###.#W   T:##.#°C"]
-    L6["Line 2:  SP:##.#°C  MODE:XXXX"]
+ subgraph LCD["LCD 16×2( LCD Task)"]
+        L5["Line 1:  P:###.#W   T:##.#°C"]
+        L6["Line 2:  SP:##.#°C  MODE:XXXX"]
   end
+    TIM_ISR["Timer ISR (100 ms)"] -- give --> PID_TickSem["PID_TickSem (BinSem)"]
+    ADC_ISR["POWER SENSOR ISR"] -- give --> Power_DoneSem["PowerDoneSem (BinSem)"]
+    BTN_ISR["Button EXTI ISR"] -- give --> BtnEventSem["BtnEventSem (BinSem)"]
+    TEMP["Temp Sensor Task (P3)"] -- send temp --> TempQ["TempQ"]
+    TempQ --> PID["PID Control Task (P4)"] & UI["UI/LCD Task (P2)"]
+    UI -- send setpoint --> SetpointQ["SetpointQ"]
+    SetpointQ --> PID
+    POWER["Power Monitor Task (P1)"] -- send power --> PowerQ["PowerQ"]
+    PowerQ --> SAFETY["Safety/Fault Task (P5)"] & UI
+    POWER -- send alert --> FaultQ["FaultQ"]
+    FaultQ --> SAFETY
+    PID_TickSem --> PID
+    Power_DoneSem --> POWER
+    BtnEventSem --> UI
+    UI -- take/give --> LCD_Mutex["LCD_Mutex"]
+    TEMP -- take/give --> OneWire_Mutex["1-Wire_Mutex"]
+    PID <-- take/give --> PIDParam_Mutex["PIDParam_Mutex"]
+    UI -- edit params --> PIDParam_Mutex
+    ANY["Any task"] -- printf --> UART_Mutex["UART_Mutex"]
+    UI -- write lines --> LCD
+    LCD_Mutex <--> SAFETY
+    title["Water Heater RTOS Flowchart"]
+     L1:::Semaphores
+     L2:::Mutex
+     L3:::Task
+     L4:::Queue
+     PID_TickSem:::Semaphores
+     Power_DoneSem:::Semaphores
+     BtnEventSem:::Semaphores
+     TEMP:::Task
+     TempQ:::Queue
+     PID:::Task
+     UI:::Task
+     SetpointQ:::Queue
+     POWER:::Task
+     PowerQ:::Queue
+     SAFETY:::Task
+     FaultQ:::Queue
+     LCD_Mutex:::Mutex
+     OneWire_Mutex:::Mutex
+     PIDParam_Mutex:::Mutex
+     UART_Mutex:::Mutex
+    classDef Semaphores fill:#ccccff,stroke:#0000ff,stroke-width:2px,color:#000000
+    classDef Mutex fill:#ffcccc,stroke:#ff0000,stroke-width:2px,color:#000000
+    classDef Task fill:#00ddff,stroke:#0000aa,stroke-width:2px,color:#000000
+    classDef Queue fill:#00ff99,stroke:#00aa00,stroke-width:2px,color:#000000
+    style L5 fill:#D50000
+    style L6 fill:#D50000
+    style LCD fill:#2962FF
+    style title fill:none,stroke:none,fontSize:24px,fontWeight:bold,color:#00C853
 
-  %% ---------- ISRs -> Semaphores ----------
-  TIM_ISR["Timer ISR (100 ms)"] -->|give| PID_TickSem["PID_TickSem (BinSem)"]
-  ADC_ISR["POWER SENSOR ISR"] -->|give| Power_DoneSem["PowerDoneSem (BinSem)"]
-  BTN_ISR["Button EXTI ISR"] -->|give| BtnEventSem["BtnEventSem (BinSem)"]
-
-  %% ---------- Tasks & Queues ----------
-  TEMP["Temp Sensor Task (P3)"] -->|send temp| TempQ["TempQ"]
-  TempQ --> PID["PID Control Task (P4)"]
-  TempQ --> UI["UI/LCD Task (P2)"]
-
-  UI -->|send setpoint| SetpointQ["SetpointQ"]
-  SetpointQ --> PID
-
-  POWER["Power Monitor Task (P1)"] -->|send power| PowerQ["PowerQ"]
-  PowerQ --> SAFETY["Safety/Fault Task (P5)"]
-  PowerQ --> UI
-
-  POWER -->|send alert| FaultQ["FaultQ"]
-  FaultQ --> SAFETY
-
-  %% ---------- Semaphores into tasks ----------
-  PID_TickSem --> PID
-  Power_DoneSem --> POWER
-  BtnEventSem --> UI
-
-  %% ---------- Mutexes ----------
-  UI <-->|take/give| LCD_Mutex["LCD_Mutex"]
-  TEMP <-->|take/give| OneWire_Mutex["1-Wire_Mutex"]
-  PID <-->|take/give| PIDParam_Mutex["PIDParam_Mutex"]
-  UI -->|edit params| PIDParam_Mutex
-
-  ANY["Any task"] -->|printf| UART_Mutex["UART_Mutex"]
-
-  %% ---------- LCD writing ----------
-  UI -->|write lines| LCD
-
-  %% Optional: LCD_Mutex also used by Safety
-  LCD_Mutex <--> SAFETY
-
-  %% ---------- Title ----------
-  title["Water Heater RTOS Flowchart"]
-
-  %% ---------- Classes / Styling ----------
-  classDef Semaphores fill:#ccccff,stroke:#0000ff,stroke-width:2px,color:#000000
-  classDef Mutex fill:#ffcccc,stroke:#ff0000,stroke-width:2px,color:#000000
-  classDef Task fill:#00ddff,stroke:#0000aa,stroke-width:2px,color:#000000
-  classDef Queue fill:#00ff99,stroke:#00aa00,stroke-width:2px,color:#000000
-
-  class PID_TickSem,Power_DoneSem,BtnEventSem Semaphores
-  class LCD_Mutex,OneWire_Mutex,PIDParam_Mutex,UART_Mutex Mutex
-  class TEMP,PID,UI,POWER,SAFETY Task
-  class TempQ,SetpointQ,PowerQ,FaultQ Queue
-
-  %% Highlight LCD preview and LCD group
-  style L5 fill:#D50000,color:#ffffff
-  style L6 fill:#D50000,color:#ffffff
-  style LCD fill:#2962FF,color:#ffffff
 ```
 ---
 ## 📊 Python Visualization
