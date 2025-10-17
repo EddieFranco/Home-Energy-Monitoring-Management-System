@@ -91,12 +91,13 @@ Includes:
 
 The diagram below shows the communication between tasks, queues, semaphores, and mutexes in the system.  
 
-```mermaid 
+```mermaid
+---
 config:
   theme: dark
   look: classic
   layout: fixed
-
+---
 flowchart TB
  subgraph Legend["Legend"]
     direction LR
