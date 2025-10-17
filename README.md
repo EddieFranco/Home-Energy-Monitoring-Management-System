@@ -62,7 +62,7 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 | Power Supply | LM2596 buck + Mean Well LRS-350-12 |
 | Display | 16×2 LCD via I²C (optional) |
 | Load | 12V resistive water heater element (~300W) |
-
+```mermaid
 %%{init: {
   "theme": "dark",
   "flowchart": { "curve": "linear", "htmlLabels": true, "nodeSpacing": 40, "rankSpacing": 40 }
@@ -121,7 +121,7 @@ flowchart LR
   class IO,LCD,PC io;
   class ACT,BTS box;
 
-
+```
 **Connections**
 - **PWM (Heater Control / BTS7960 Driver):**  
   - TIM3_CH3 → PB0 (LPWM)  
