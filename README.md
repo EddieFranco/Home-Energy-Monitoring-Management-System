@@ -5,13 +5,17 @@
 
 ## Overview
 
-This project implements a **closed-loop water heater temperature control system** using a **PID controller** under **FreeRTOS** on an **STM32F407G-DISC1** microcontroller.
+This project implements a **closed-loop water heater temperature control system** using a **PID controller** under **FreeRTOS** on an **STM32F407G-DISC1** microcontroller, with a **BTS7960 PWM driver** for high-current heater control and an **ATM90E32AS poly-phase energy metering IC** (SPI) for real-time voltage, current, and power monitoring.
+
 
 It uses:
+- **STM32F407G-DISC1 microcontroller** as the main processing unit running FreeRTOS and coordinating all system tasks  
 - **DS18B20 temperature sensor** for precise water temperature feedback  
 - **BTS7960 43A motor driver** for high-current PWM heater control  
 - **ATM90E32AS poly-phase energy metering IC** for accurate voltage, current, and power measurement via SPI  
-- **Python Matplotlib** for real-time data visualization over UART  
+- **I²C 16×2 LCD display** for real-time system information such as temperature, power, and control mode  
+- **Python Matplotlib** for real-time data visualization over UART on a host PC  
+
 
 The goal is to maintain stable heater performance, energy efficiency, and safety through modular firmware and real-time monitoring.
 
@@ -21,7 +25,7 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 
 | Description | Image |
 |--------------|--------|
-| PCB Amtel M90E32AS Power Monitor Schematic Overview | ![Schematic Overview](images/M90E32AS_schematic.JPG)|
+| PCB Amtel M90E32AS Power Monitor Schematic Overview | ![Schematic Overview](/images/M90E32AS_schematic.JPG)|
 | PCB Amtel M90E32AS Power Monitor Layout | ![PCB Layout](images/M90E32AS_layout.JPG)|
 | PCB Amtel M90E32AS Power Monitor 3D | ![PCB Layout](images/M90E32AS_3D.JPG)|
 | Water Heater Temperature Control Hardware prototype setup | ![System Setup](images/system_setup.jpg) |
@@ -46,7 +50,7 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 
 ---
 
-## 🛠️ Hardware Setup
+##  Hardware Setup
 
 | Component | Description |
 |------------|--------------|
@@ -59,24 +63,67 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 | Load | 12V resistive water heater element (~300W) |
 
 **Connections**
-- PWM: TIM3_CH3 (PB0), TIM3_CH4 (PB1)  
-- SPI3: PC10 (SCK), PC11 (MISO), PC12 (MOSI), PC9 (CS)  
-- DS18B20: 1-Wire GPIO input (with 4.7k pull-up)
+- **PWM (Heater Control / BTS7960 Driver):**  
+  - TIM3_CH3 → PB0 (LPWM)  
+  - TIM3_CH4 → PB1 (RPWM)  
+  - VCC (BTS7960 logic) → 5V  
+  - GND → Common ground with STM32  
+  - Motor output terminals → Heater load  
+
+- **SPI3 (Energy Meter / ATM90E32AS):**  
+  - PC10 → SCK  
+  - PC11 → MISO  
+  - PC12 → MOSI  
+  - PC9  → CS (Chip Select)  
+
+- **Temperature Sensor (DS18B20):**  
+  - 1-Wire Data → e.g., PA8 (configurable GPIO input/output)  
+  - 4.7 kΩ pull-up to 3.3 V  
+
+- **LCD Display (I²C 16×2):**  
+  - PB6 → SCL  
+  - PB7 → SDA  
+  - 5V and GND shared with STM32 board  
+
+- **UART (Telemetry / Python Visualization):**  
+  - USART2_TX → PA2  
+  - USART2_RX → PA3  
+  - Baud rate: 115200 bps, 8N1 configuration  
+
+- **Power Supply:**  
+  - 12 V DC input → LM2596 buck → 5 V and 3.3 V rails for logic  
+  - Common GND between STM32, BTS7960, and ATM90E32AS
+ 
+
 
 ---
 
-## 🧠 Firmware Modules
+##  Firmware Modules
 
-### 🔹 PWM Driver — `bts7960_pwm.c/.h`
-Handles PWM generation via TIM3 for heater control.  
-Supports `SetDuty`, `GetDuty`, and high-level helpers (`Stop()`, `Brake()`, `SetHeaterPercent()`).
+- **PWM / BTS7960 Driver**
+  - Headers: `Core/Inc/bts7960_pwm.h`
+  - Sources: `Core/Src/bts7960_pwm.c`
 
-### 🔹 Energy Meter — `atm90e32.c/.h`
-SPI driver for ATM90E32AS energy metering IC.  
-Includes:
-- Voltage/current/power measurement
-- One-point and auto-gain calibration
-- Current offset and health diagnostics
+- **Energy Meter / ATM90E32AS**
+  - Headers: `Core/Inc/atm90e32.h`
+  - Sources: `Core/Src/atm90e32.c`
+
+- **Temperature Sensor / DS18B20**
+  - Headers: `Core/Inc/ds18b20.h`
+  - Sources: `Core/Src/ds18b20.c`
+
+- **LCD (I²C 16×2, PCF8574 Backpack)**
+  - Headers: `Core/Inc/lcd_i2c.h`
+  - Sources: `Core/Src/lcd_i2c.c`
+
+- **PID Controller / Control Task**
+  - Headers: `Core/Inc/pid_task.h`
+  - Sources: `Core/Src/pid_task.c`
+
+- **UART Telemetry / Serial Communication**
+  - Headers: `Core/Inc/telemetry.h`
+  - Sources: `Core/Src/telemetry.c`
+
 
 ### 🔹 RTOS Tasks
 | Task | Function |
