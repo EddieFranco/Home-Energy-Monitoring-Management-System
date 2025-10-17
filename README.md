@@ -25,12 +25,12 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 
 | Description | Image |
 |--------------|--------|
-| PCB Amtel M90E32AS Power Monitor Schematic Overview | ![Schematic Overview](/images/M90E32AS_schematic.JPG)|
-| PCB Amtel M90E32AS Power Monitor Layout | ![PCB Layout](images/M90E32AS_layout.JPG)|
-| PCB Amtel M90E32AS Power Monitor 3D | ![PCB Layout](images/M90E32AS_3D.JPG)|
-| Water Heater Temperature Control Hardware prototype setup | ![System Setup](images/system_setup.jpg) |
-| Water Heater Temperature Control Live data visualization | ![Python Plot](images/python_plot.png) |
-| Water Heater Temperature Control Optional system block diagram | ![Block Diagram](images/system_diagram.png) |
+| PCB Atmel M90E32AS Power Monitor Schematic Overview | ![Schematic Overview](images/M90E32AS_schematic.JPG) |
+| PCB Atmel M90E32AS Power Monitor Layout | ![PCB Layout](images/M90E32AS_layout.JPG) |
+| PCB Atmel M90E32AS Power Monitor 3D | ![PCB 3D](images/M90E32AS_3D.JPG) |
+| Water Heater Temperature Control Hardware Prototype Setup | ![System Setup](images/system_setup.jpg) |
+| Water Heater Temperature Control Live Data Visualization | ![Python Plot](images/python_plot.png) |
+| Water Heater Temperature Control Optional System Block Diagram | ![Block Diagram](images/system_diagram.png) |
 
 ---
 
