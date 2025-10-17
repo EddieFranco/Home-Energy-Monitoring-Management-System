@@ -21,12 +21,12 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 
 | Description | Image |
 |--------------|--------|
-| PCB design or 3D render | ![PCB Design](images/pcb_design.png) |
-| Hardware prototype setup | ![System Setup](images/system_setup.jpg) |
-| Live data visualization | ![Python Plot](images/python_plot.png) |
-| Optional system block diagram | ![Block Diagram](images/system_diagram.png) |
-
-> 💡*Replace these image paths with your actual image filenames once uploaded.*
+| PCB Amtel M90E32AS Power Monitor Schematic Overview | ![Schematic Overview](images/M90E32AS_schematic.JPG)|
+| PCB Amtel M90E32AS Power Monitor Layout | ![PCB Layout](images/M90E32AS_layout.JPG)|
+| PCB Amtel M90E32AS Power Monitor 3D | ![PCB Layout](images/M90E32AS_3D.JPG)|
+| Water Heater Temperature Control Hardware prototype setup | ![System Setup](images/system_setup.jpg) |
+| Water Heater Temperature Control Live data visualization | ![Python Plot](images/python_plot.png) |
+| Water Heater Temperature Control Optional system block diagram | ![Block Diagram](images/system_diagram.png) |
 
 ---
 
@@ -43,4 +43,55 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 ---
 
 ## System Architecture
+
+---
+
+## 🛠️ Hardware Setup
+
+| Component | Description |
+|------------|--------------|
+| MCU | STM32F407G-DISC1 |
+| Driver | BTS7960 43A Dual H-Bridge Motor Driver |
+| Sensor | DS18B20 temperature sensor |
+| Energy Meter | ATM90E32AS (poly-phase metering IC, SPI3) |
+| Power Supply | LM2596 buck + Mean Well LRS-350-12 |
+| Display | 16×2 LCD via I²C (optional) |
+| Load | 12V resistive water heater element (~300W) |
+
+**Connections**
+- PWM: TIM3_CH3 (PB0), TIM3_CH4 (PB1)  
+- SPI3: PC10 (SCK), PC11 (MISO), PC12 (MOSI), PC9 (CS)  
+- DS18B20: 1-Wire GPIO input (with 4.7k pull-up)
+
+---
+
+## 🧠 Firmware Modules
+
+### 🔹 PWM Driver — `bts7960_pwm.c/.h`
+Handles PWM generation via TIM3 for heater control.  
+Supports `SetDuty`, `GetDuty`, and high-level helpers (`Stop()`, `Brake()`, `SetHeaterPercent()`).
+
+### 🔹 Energy Meter — `atm90e32.c/.h`
+SPI driver for ATM90E32AS energy metering IC.  
+Includes:
+- Voltage/current/power measurement
+- One-point and auto-gain calibration
+- Current offset and health diagnostics
+
+### 🔹 RTOS Tasks
+| Task | Function |
+|------|-----------|
+| `TempTask` | Reads DS18B20 temperature and queues it |
+| `PIDTask` | Computes control output and sets PWM |
+| `SafetyTask` | Handles overcurrent and fault events |
+| `UITask` | Updates LCD or UART display |
+| `PowerTask` | Reads ATM90E32AS power/voltage data |
+
+---
+
+## 📊 Python Visualization
+
+A Python script streams UART data from the STM32 for live visualization.
+
+Example line format:
 
