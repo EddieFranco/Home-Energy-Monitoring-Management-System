@@ -87,7 +87,6 @@ Includes:
 | `UITask` | Updates LCD or UART display |
 | `PowerTask` | Reads ATM90E32AS power/voltage data |
 ---
----
 config:
   theme: dark
   look: classic
