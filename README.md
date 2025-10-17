@@ -29,8 +29,8 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 | PCB Atmel M90E32AS Power Monitor Layout | ![PCB Layout](Images/M90E32AS_layout.JPG) |
 | PCB Atmel M90E32AS Power Monitor 3D | ![PCB 3D](Images/M90E32AS_3D.JPG) |
 | Water Heater Temperature Control Hardware Prototype Setup | ![System Setup](Images/Hardware_Setup.jpg) |
-| Water Heater Temperature Control Live Data Visualization | ![Python Plot](Images/python_plot.png) |
-| Water Heater Temperature Control Optional System Block Diagram | ![Block Diagram](Images/system_diagram.png) |
+| Water Heater Temperature Control Live Data Visualization | ![Python Plot](Images/data_visualization.JPG) |
+| Water Heater Temperature Control System Block Diagram | ![Block Diagram](Images/block_diagram.JPG) |
 
 
 ---
@@ -57,10 +57,10 @@ The goal is to maintain stable heater performance, energy efficiency, and safety
 |------------|--------------|
 | MCU | STM32F407G-DISC1 |
 | Driver | BTS7960 43A Dual H-Bridge Motor Driver |
-| Sensor | DS18B20 temperature sensor |
+| Sensor | DS18B20 temperature sensor (One Wire) |
 | Energy Meter | ATM90E32AS (poly-phase metering IC, SPI3) |
 | Power Supply | LM2596 buck + Mean Well LRS-350-12 |
-| Display | 16×2 LCD via I²C (optional) |
+| Display | 16×2 LCD via I²C  |
 | Load | 12V resistive water heater element (~300W) |
 
 ---
