@@ -90,12 +90,9 @@ Includes:
 ## 🧵 RTOS Architecture (Mermaid)
 
 The diagram below shows the communication between tasks, queues, semaphores, and mutexes in the system.  
-> 💡 GitHub supports Mermaid natively, so this will render automatically.
+
 ```mermaid 
-%%{init: {
-  "theme": "dark",
-  "flowchart": { "htmlLabels": true, "curve": "linear", "nodeSpacing": 40, "rankSpacing": 40 }
-}}%%
+
 
 flowchart TB
  subgraph Legend["Legend"]
