@@ -212,9 +212,106 @@ flowchart TB
 
 ```
 ---
-## 📊 Python Visualization
+### 🧮 PID Control — Detailed Overview
 
-A Python script streams UART data from the STM32 for live visualization.
+This project uses a discrete **PID controller** to regulate water temperature by modulating heater power (PWM duty on the BTS7960). The controller runs in its own FreeRTOS task and executes on a **fixed period** (default: 100 ms) triggered by `PID_TickSem` from a timer ISR.
 
-Example line format:
+#### Signals & Units
+| Symbol | Source/Units | Description |
+|---|---|---|
+| `SP` | UI task → `SetpointQ` (°C) | Temperature setpoint entered by user / UI |
+| `PV` | Temp task → `TempQ` (°C) | Measured temperature from DS18B20 |
+| `e = SP − PV` | °C | Control error |
+| `u_raw` | [%] | Unclamped PID output (0–100) |
+| `u` | [%] | Saturated heater command (0–100), sent to PWM |
+| `P,I,D` | terms | Proportional, Integral, Derivative contributions |
+
+#### Timing
+- **Sample period** `DT = 0.100 s` (100 ms) controlled by `PID_TickSem`.
+- Keep *all* controller math synchronous with this tick to maintain stability.
+
+#### Output Mapping
+- `u` in **percent** → `BTS7960_SetHeaterPercent(u);`
+- One-direction heating: CH3 (LPWM) drives duty, CH4 is held at 0%.
+
+#### Anti-Windup & Derivative Filter
+- **Integral clamping:** `I` only integrates when output is **not saturated** in the direction of error.
+- **Derivative on measurement:** use `−Kd * (PV − PV_prev)/DT` to reduce noise amplification.
+- Optional **first-order filter** for derivative: `D = α·D_prev + (1−α)·D_new`, with `α≈0.8–0.9`.
+
+#### Safety Interlocks
+- If Temp task posts a **sensor fault sentinel** (e.g., `PV < −999`), the PID task **forces heater OFF**.
+- Safety/Fault task can override and zero PWM on overcurrent/overtemp events.
+
+---
+
+### 🧩 PID Task (pseudo-C, FreeRTOS style)
+
+```c
+// Called each 100 ms when PID_TickSem is given by TIM ISR.
+void StartPIDTask(void *argument)
+{
+    const float DT = 0.100f;           // 100 ms
+    // Gains (tune in UI or compile-time)
+    volatile float Kp = 6.0f, Ki = 0.8f, Kd = 0.0f;
+
+    // State
+    float I = 0.0f;
+    float pv_prev = 0.0f;
+    float u = 0.0f;
+
+    for (;;) {
+        osSemaphoreAcquire(PID_TickSemHandle, osWaitForever);
+
+        // 1) Read latest PV/SP (non-blocking)
+        float pv = pv_prev, sp = 0.0f;
+        (void)osMessageQueueGet(TempQHandle,     &pv, NULL, 0);
+        (void)osMessageQueueGet(SetpointQHandle, &sp, NULL, 0);
+
+        // Sensor fault sentinel from TempTask => heater OFF
+        if (pv < -999.0f) {
+            BTS7960_SetHeaterPercent(0.0f);
+            continue;
+        }
+
+        // 2) PID terms
+        float e  = sp - pv;                     // °C
+        float P  = Kp * e;
+        float D  = -Kd * (pv - pv_prev) / DT;   // derivative on measurement
+        float u_raw = P + I + D;                // before clamping
+
+        // 3) Saturate to 0..100%
+        float u_sat = u_raw;
+        if (u_sat < 0.0f)   u_sat = 0.0f;
+        if (u_sat > 100.0f) u_sat = 100.0f;
+
+        // 4) Anti-windup (integrate only when not fighting saturation)
+        bool at_min = (u_sat <= 0.0f)   && (e < 0.0f);
+        bool at_max = (u_sat >= 100.0f) && (e > 0.0f);
+        if (!(at_min || at_max)) {
+            I += Ki * e * DT;                     // integrate error
+            // Optional clamp on I to keep it bound:
+            if (I > 100.0f) I = 100.0f;
+            if (I < -100.0f) I = -100.0f;
+        }
+
+        // 5) Command heater
+        u = u_sat;
+        BTS7960_SetHeaterPercent(u);
+
+        // 6) Keep last PV for derivative
+        pv_prev = pv;
+
+        // Optional: update ATM90 auto-gain for PWM duty tracking
+        // ATM90_AutoGainFromPWM(u / 100.0f, 0.03f, 0.10f);
+
+        // 7) Telemetry for Python plot (CSV: t_ms,SP,PV,u,P,W)
+        uint32_t t_ms = HAL_GetTick();
+        float watts = ATM90_Read_P_W();
+        // Format you already use: "t_ms,setpoint_c,temp_c"
+        // You can extend with duty and power if desired:
+        // Telemetry_Printf("%lu,%.2f,%.2f,%.1f,%.1f,%.1f\r\n", t_ms, sp, pv, u, P, watts);
+    }
+}
+
 
