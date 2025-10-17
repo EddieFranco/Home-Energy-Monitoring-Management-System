@@ -92,6 +92,7 @@ Includes:
 The diagram below shows the communication between tasks, queues, semaphores, and mutexes in the system.  
 > 💡 GitHub supports Mermaid natively, so this will render automatically.
 ---
+```mermaid 
 config:
   theme: dark
   look: classic
@@ -159,7 +160,7 @@ flowchart TB
     style L6 fill:#D50000
     style LCD fill:#2962FF
     style title fill:none,stroke:none,fontSize:24px,fontWeight:bold,color:#00C853
-
+```
 
 
 ## 📊 Python Visualization
