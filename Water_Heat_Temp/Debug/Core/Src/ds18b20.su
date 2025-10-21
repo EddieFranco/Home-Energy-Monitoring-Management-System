@@ -1,0 +1,10 @@
+../Core/Src/ds18b20.c:19:16:ds_crc8	32	static
+../Core/Src/ds18b20.c:34:13:DS18B20_ReadPowerSupply	24	static
+../Core/Src/ds18b20.c:45:6:DS18B20_StartConversion_SkipROM	8	static
+../Core/Src/ds18b20.c:53:6:DS18B20_ReadScratchpad	32	static
+../Core/Src/ds18b20.c:67:13:DS18B20_ReadRawC	40	static
+../Core/Src/ds18b20.c:113:6:DS18B20_ReadTempC	16	static
+../Core/Src/ds18b20.c:118:6:DS18B20_Init	16	static
+../Core/Src/ds18b20.c:129:6:DS18B20_ReadTempC_Watchdog	32	static
+../Core/Src/ds18b20.c:154:6:DS18B20_FaultLatched	4	static
+../Core/Src/ds18b20.c:156:6:DS18B20_FaultClear	4	static

@@ -1,0 +1,10 @@
+../Core/Src/ds18b20.c:19:16:ds_crc8	4
+../Core/Src/ds18b20.c:34:13:DS18B20_ReadPowerSupply	2
+../Core/Src/ds18b20.c:45:6:DS18B20_StartConversion_SkipROM	2
+../Core/Src/ds18b20.c:53:6:DS18B20_ReadScratchpad	3
+../Core/Src/ds18b20.c:67:13:DS18B20_ReadRawC	12
+../Core/Src/ds18b20.c:113:6:DS18B20_ReadTempC	1
+../Core/Src/ds18b20.c:118:6:DS18B20_Init	1
+../Core/Src/ds18b20.c:129:6:DS18B20_ReadTempC_Watchdog	8
+../Core/Src/ds18b20.c:154:6:DS18B20_FaultLatched	1
+../Core/Src/ds18b20.c:156:6:DS18B20_FaultClear	1

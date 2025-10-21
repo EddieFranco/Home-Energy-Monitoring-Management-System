@@ -1,0 +1,6 @@
+../Core/Src/bts7960_pwm.c:8:21:clampf	24	static
+../Core/Src/bts7960_pwm.c:14:6:BTS7960_PWM_Init	8	static
+../Core/Src/bts7960_pwm.c:25:6:BTS7960_SetDuty_CH3	24	static
+../Core/Src/bts7960_pwm.c:34:6:BTS7960_SetDuty_CH4	24	static
+../Core/Src/bts7960_pwm.c:44:7:BTS7960_GetDuty_CH3	16	static
+../Core/Src/bts7960_pwm.c:53:7:BTS7960_GetDuty_CH4	16	static

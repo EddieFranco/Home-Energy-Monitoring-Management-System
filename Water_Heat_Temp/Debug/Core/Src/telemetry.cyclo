@@ -1,0 +1,4 @@
+../Core/Src/telemetry.c:26:6:Telemetry_UpdateSetpoint	3
+../Core/Src/telemetry.c:37:6:Telemetry_UpdateTemp	3
+../Core/Src/telemetry.c:47:6:Telemetry_Task	6
+../Core/Src/telemetry.c:86:6:Telemetry_Init	2
